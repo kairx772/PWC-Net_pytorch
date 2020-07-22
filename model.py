@@ -8,13 +8,14 @@ from modules import (WarpingLayer, FeaturePyramidExtractor, CostVolumeLayer, Opt
 
 # from correlation_package.modules.correlation import Correlation
 
+'''
 import sys
 try:
     from .correlation import correlation # the custom cost volume layer
 except:
     sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
 # end
-
+'''
 
 class Net(nn.Module):
 
