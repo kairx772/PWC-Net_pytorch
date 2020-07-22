@@ -295,7 +295,7 @@ def train(args):
             #     # flow_gt_vis = [vis_flow(i.squeeze()) for i in np.split(np.array(flow_gt_pyramid[layer_idx].data).transpose(0,2,3,1), B, axis = 0)][:min(B, args.max_output)]
             #     logger.image_summary(f'flow-lv{layer_idx}', flow_vis, step)
 
-            logger.image_summary('src & tgt', [np.concatenate([i.squeeze(0),j.squeeze(0)], axis = 1) for i,j in zip(np.split(np.array(x1_raw.data).transpose(0,2,3,1), B, axis = 0), np.split(np.array((x2_raw.data).cpu()).transpose(0,2,3,1), B, axis = 0))], step)
+            logger.image_summary('src & tgt', [np.concatenate([i.squeeze(0),j.squeeze(0)], axis = 1) for i,j in zip(np.split(np.array((x1_raw.data).cpu()).transpose(0,2,3,1), B, axis = 0), np.split(np.array((x2_raw.data).cpu()).transpose(0,2,3,1), B, axis = 0))], step)
 
         # save model
         if step % args.checkpoint_interval == 0:
@@ -328,8 +328,8 @@ def pred(args):
         def __call__(self, img):
             return img[(self.h-self.th)//2:(self.h+self.th)//2, (self.w-self.tw)//2:(self.w+self.tw)//2,:]
 
-    x1_raw = np.array(x1_raw)
-    x2_raw = np.array(x2_raw)
+    x1_raw = np.array((x1_raw).cpu())
+    x2_raw = np.array((x2_raw).cpu())
 
     # if args.crop_shape is not None:
     #     cropper = StaticCenterCrop(x1_raw.shape[:2], args.crop_shape)
@@ -360,7 +360,7 @@ def pred(args):
     with torch.no_grad():
         flows, summaries = model(x)
     flow = flows[-1]
-    flow = np.array(flow.data).transpose(0,2,3,1).squeeze(0)
+    flow = np.array((flow.data).cpu()).transpose(0,2,3,1).squeeze(0)
     save_flow(args.output, flow)
     flow_vis = vis_flow(flow)
     imageio.imwrite(args.output.replace('.flo', '.png'), flow_vis)
