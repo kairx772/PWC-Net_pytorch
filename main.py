@@ -295,7 +295,7 @@ def train(args):
             #     # flow_gt_vis = [vis_flow(i.squeeze()) for i in np.split(np.array(flow_gt_pyramid[layer_idx].data).transpose(0,2,3,1), B, axis = 0)][:min(B, args.max_output)]
             #     logger.image_summary(f'flow-lv{layer_idx}', flow_vis, step)
 
-            logger.image_summary('src & tgt', [np.concatenate([i.squeeze(0),j.squeeze(0)], axis = 1) for i,j in zip(np.split(np.array(x1_raw.data).transpose(0,2,3,1), B, axis = 0), np.split(np.array(x2_raw.data).transpose(0,2,3,1), B, axis = 0))], step)
+            logger.image_summary('src & tgt', [np.concatenate([i.squeeze(0),j.squeeze(0)], axis = 1) for i,j in zip(np.split(np.array(x1_raw.data).transpose(0,2,3,1), B, axis = 0), np.split(np.array((x2_raw.data).cpu()).transpose(0,2,3,1), B, axis = 0))], step)
 
         # save model
         if step % args.checkpoint_interval == 0:
