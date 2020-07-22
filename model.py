@@ -5,7 +5,15 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 from modules import (WarpingLayer, FeaturePyramidExtractor, CostVolumeLayer, OpticalFlowEstimator, ContextNetwork)
-from correlation_package.modules.correlation import Correlation
+
+# from correlation_package.modules.correlation import Correlation
+
+import sys
+try:
+    from .correlation import correlation # the custom cost volume layer
+except:
+    sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
+# end
 
 
 class Net(nn.Module):
@@ -18,11 +26,16 @@ class Net(nn.Module):
         self.feature_pyramid_extractor = FeaturePyramidExtractor(args).to(args.device)        
         
         self.warping_layer = WarpingLayer(args)
+        # self.corr = correlation.FunctionCorrelation(tenFirst, tenSecond)
+        self.corr = CostVolumeLayer(args)
+
+        '''
         if args.corr == 'CostVolumeLayer':
             self.corr = CostVolumeLayer(args)
         else:
             self.corr = Correlation(pad_size = args.search_range, kernel_size = 1, max_displacement = args.search_range, stride1 = 1, stride2 = 1, corr_multiply = 1).to(args.device)
-        
+        '''
+
         self.flow_estimators = []
         for l, ch in enumerate(args.lv_chs[::-1]):
             layer = OpticalFlowEstimator(args, ch + (args.search_range*2+1)**2 + 2).to(args.device)

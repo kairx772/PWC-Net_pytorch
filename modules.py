@@ -53,11 +53,13 @@ class CostVolumeLayer(nn.Module):
     def forward(self, x1, x2):
         args = self.args
 
-        shape = list(src.size()); shape[1] = (self.search_range * 2 + 1) ** 2
+        # shape = list(src.size())
+        shape = list(x1.shape)
+        shape[1] = (self.search_range * 2 + 1) ** 2
         cv = torch.zeros(shape).to(args.device)
 
-        for i in range(-search_range, search_range + 1):
-            for j in range(-search_range, search_range + 1):
+        for i in range(-self.search_range, self.search_range + 1):
+            for j in range(-self.search_range, self.search_range + 1):
                 if   i < 0: slice_h, slice_h_r = slice(None, i), slice(-i, None)
                 elif i > 0: slice_h, slice_h_r = slice(i, None), slice(None, -i)
                 else:       slice_h, slice_h_r = slice(None),    slice(None)
@@ -66,7 +68,7 @@ class CostVolumeLayer(nn.Module):
                 elif j > 0: slice_w, slice_w_r = slice(j, None), slice(None, -j)
                 else:       slice_w, slice_w_r = slice(None),    slice(None)
 
-                cv[:, (search_range*2+1) * i + j, slice_h, slice_w] = (x1[:,:,slice_h, slice_w]  * x2[:,:,slice_h_r, slice_w_r]).sum(1)
+                cv[:, (self.search_range*2+1) * i + j, slice_h, slice_w] = (x1[:,:,slice_h, slice_w]  * x2[:,:,slice_h_r, slice_w_r]).sum(1)
     
         return cv / shape[1]
 
