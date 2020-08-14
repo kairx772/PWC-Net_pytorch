@@ -11,6 +11,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 import time
 
+# from model import Net
 from model import Net
 from losses import L1loss, L2loss, training_loss, robust_training_loss, MultiScale, EPE
 from dataset import (FlyingChairs, FlyingThings, Sintel, SintelFinal, SintelClean, KITTI)
@@ -67,7 +68,7 @@ def main():
     # ============================================================
     summary_parser.add_argument('-i', '--input_shape', type = int, nargs = '*', default = (3, 2, 384, 448))
 
-
+ 
     # args for train
     # ============================================================
     # dataflow
@@ -77,7 +78,7 @@ def main():
     train_parser.add_argument('--resize_scale', type = float, default = None)
     train_parser.add_argument('--load', type = str, default = None)
     
-    train_parser.add_argument('--batch_size', default = 8, type=int, help='mini-batch size')
+    train_parser.add_argument('--batch_size', default = 1, type=int, help='mini-batch size')
     train_parser.add_argument('--dataset_dir', type = str, required = True)
     train_parser.add_argument('--dataset', type = str, choices = ['FlyingChairs', 'FlyingThings', 'SintelFinal', 'SintelClean', 'KITTI'], required = True)
 
@@ -299,7 +300,7 @@ def train(args):
 
         # save model
         if step % args.checkpoint_interval == 0:
-            torch.save(model.state_dict(), str(p_log / f'{step}.pkl'))
+            torch.save(model.state_dict(), str('last_pwc.pkl'))
         # print log
         if step % args.log_interval == 0:
             print(f'Step [{step}/{args.total_step}], Loss: {total_loss / step:.4f}, EPE: {total_epe / step:.4f}, Forward: {forward_time/step*1000} ms, Backward: {backward_time/step*1000} ms')
